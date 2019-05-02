@@ -1,0 +1,14 @@
+{% extends "base.html" %} 
+{% block content %}
+<div>
+    <form action="/post" method='post'>
+        <div><input type="text" name='title' value='Title'></div>
+        <div>
+            <textarea name="post" placeholder="Write something.." style="height:200px"> </textarea>
+        </div>
+        <div>
+            <input type="submit" value='Submit'>
+        </div>
+    </form>
+</div>
+{% endblock %}

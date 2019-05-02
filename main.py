@@ -16,8 +16,9 @@ class Blog(db.Model):
     body = db.Column(db.String(2000))
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, title, owner):
+    def __init__(self, title, body, owner):
         self.title = title
+        self.body = body
         self.owner = owner
     
     def __repr__(self):
@@ -38,8 +39,9 @@ class User(db.Model):
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    return none
-    
+    posts = Blog.query.filter_by().all()
+
+    return render_template('home.html', title='Pothole Funhouse', posts=posts)
     
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -81,12 +83,25 @@ def register():
 
 @app.route('/logout')
 def logout():
-    username = User.name
-    user = User.query.filter_by(name=username).first()
     del session['user']
     flash('logged out')
-    return render_template('register.html')
+    return render_template('login.html')
+
+@app.route('/post', methods=['POST', 'GET'])
+def post():
+    if request.method == 'POST':
+        owner = User.query.filter_by(name=session['user']).first()
+        new_post = request.form['post']
+        title = request.form['title']
+        submit = Blog(title, new_post, owner)
+        db.session.add(submit)
+        db.session.commit()
+        flash('Post sumbitted')
+        redirect('/post')
+    
+    return render_template('post.html')
 
 
 if __name__ == "__main__":
     app.run()
+
