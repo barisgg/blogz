@@ -1,0 +1,38 @@
+{% extends "base.html" %} 
+{% block content %}
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='register.css') }}" media="screen">
+</head>
+<div class="container">
+    <form action="/register" method="post">
+        <div class="row">
+            <div class="col-25">
+                <label for="username">Username</label>
+            </div>
+            <div class="col-75">
+                <input name="username" type="text" value={{username}}>
+            </div>  
+        </div> 
+        <div class="row">
+            <div class="col-25">
+                <label for="password">Password</label>
+            </div>
+            <div class="col-75">
+                <input name="password" type="password"/>
+            </div>  
+        </div>   
+        
+        <div class="row">
+                <div class="col-25">
+                    <label for="password2">Password</label>
+                </div>
+                <div class="col-75">
+                    <input name="password2" type="password"/>
+                </div>  
+            </div>   
+            <div class="row">
+                <input type="submit" value="Login"/>
+            </div>
+    </form>
+</div>
+{% endblock %}
