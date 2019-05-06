@@ -9,7 +9,7 @@
     <p>No posts yet</p>
     {% else %}
                 {% for post in posts %}
-                    <a method='get' href='/blog?id={{post.id}}' name='title'>{{post.title}}</a>
+                    <a href='/blog?id={{post.id}}' name='title'>{{post.title}}</a>
                     <p name='body'>{{post.body}}</p>
                     <p>{{post.owner}}</p>
             {% endfor %}

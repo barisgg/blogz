@@ -43,8 +43,8 @@ def index():
 
 @app.route('/blog', methods=['GET'])
 def blog():
-    z = request.args.get('id')
-    post = Blog.query.filter_by(id=z).first()
+    id = request.args['id']
+    post = Blog.query.filter_by(id=id).first()
     return render_template('blog.html', post=post)
 
     
@@ -102,8 +102,9 @@ def newpost():
         submit = Blog(title, new_post, owner)
         db.session.add(submit)
         db.session.commit()
+        post = Blog.query.filter_by(title=title).first()
         flash('Post sumbitted')
-        redirect('/post')
+        return redirect('/blog?id=' + str(post.id))
     
     return render_template('newpost.html')
 
