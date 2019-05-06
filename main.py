@@ -7,7 +7,6 @@ app.config['DEBUG'] = True      # displays runtime errors in the browser, too
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blog:test@localhost:8889/blog'
 app.config['SQLALCHEMY_ECHO'] = True
 app.secret_key = 'safds3SDFSD'
-
 db = SQLAlchemy(app)
 
 class Blog(db.Model):
@@ -22,7 +21,7 @@ class Blog(db.Model):
         self.owner = owner
     
     def __repr__(self):
-        return '<Blog %r>' % self.title
+        return '%r' % self.id
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -40,18 +39,25 @@ class User(db.Model):
 @app.route('/', methods=['POST', 'GET'])
 def index():
     posts = Blog.query.filter_by().all()
-
     return render_template('home.html', title='Pothole Funhouse', posts=posts)
+
+@app.route('/blog', methods=['GET'])
+def blog():
+    z = request.args.get('id')
+    post = Blog.query.filter_by(id=z).first()
+    return render_template('blog.html', post=post)
+
     
 @app.route('/login', methods=['POST', 'GET'])
 def login():
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
 
         user = User.query.filter_by(name=username).first()
         if user and user.password == password:
-            session['user'] = user.name
+            session['user'] = username
             flash('logged in')
             redirect('/register')
         else:
@@ -87,8 +93,8 @@ def logout():
     flash('logged out')
     return render_template('login.html')
 
-@app.route('/post', methods=['POST', 'GET'])
-def post():
+@app.route('/newpost', methods=['POST', 'GET'])
+def newpost():
     if request.method == 'POST':
         owner = User.query.filter_by(name=session['user']).first()
         new_post = request.form['post']
@@ -99,7 +105,7 @@ def post():
         flash('Post sumbitted')
         redirect('/post')
     
-    return render_template('post.html')
+    return render_template('newpost.html')
 
 
 if __name__ == "__main__":
