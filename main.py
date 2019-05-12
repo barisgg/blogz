@@ -36,6 +36,13 @@ class User(db.Model):
     def __repr__(self):
         return '<%r>' % self.name
 
+@app.before_request
+def require_login():
+    username = ''
+    if 'user' not in session  and request.endpoint not in ("/", "login", "register"):
+        return render_template('login.html', username=username)
+
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
     posts = Blog.query.filter_by().all()
@@ -50,7 +57,7 @@ def blog():
     
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-
+    username = ''
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -71,18 +78,17 @@ def login():
         else:
             if not User.query.filter_by(name=username, password=password).all():
                 flash('incorrect password', "error")
-                return redirect('/login')
+                return render_template('login.html', username=username)
     return render_template('login.html', username=username)
     
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
-
+    username = ''
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
         password2 = request.form['password2']
-
         existing_user = User.query.filter_by(name=username).first()
 
         if not existing_user and username and password and password == password2:
@@ -110,7 +116,7 @@ def register():
 def logout():
     del session['user']
     flash('logged out')
-    return redirect('/login')
+    return redirect('/')
 
 @app.route('/newpost', methods=['POST', 'GET'])
 def newpost():
