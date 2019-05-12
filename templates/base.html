@@ -11,11 +11,12 @@
 <body>
     <div>
         <a href='/'>Home</a>
+        <a href='/blog'>All posts</a>
+        <a href="/newpost">newpost</a>
+        <a href='/login'>login</a>
         {% if session['user'] %}
             <a href='/logout'>logout</a>
         {% endif %}
-        <a href='/login'>login</a>
-        <a href="/newpost">newpost</a>
     </div>
 
     {% with messages = get_flashed_messages(with_categories=True) %}

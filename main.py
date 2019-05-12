@@ -13,7 +13,7 @@ class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250))
     body = db.Column(db.String(2000))
-    name = db.relationship('User', backref='user_name')
+    name = db.relationship('User', backref='user.user_name')
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __init__(self, title, body, owner):
@@ -55,17 +55,21 @@ def blog():
         user = request.args.get('user')
         if user:
             posts = Blog.query.filter_by(owner_id=user).all()
-            return render_template('blog.html', title='Pothole Funhouse', posts=posts)
+            x = User.query.filter_by(id=user).first()
+            name_single = x
+            return render_template('blog.html', title='Pothole Funhouse', posts=posts, name_single=name_single)
 
         if not user:
             posts = Blog.query.filter_by().all()
-            return render_template('blog.html', title='Pothole Funhouse', posts=posts)
+            name = User.query.filter_by().all()
+            return render_template('blog.html', title='Pothole Funhouse', posts=posts, name=name)
 
 @app.route('/post', methods=['GET'])
 def post():
     id = request.args['id']
     post = Blog.query.filter_by(id=id).first()
-    return render_template('post.html', post=post)
+    name = User.query.filter_by(id=post.owner_id).first()
+    return render_template('post.html', post=post, name=name)
 
     
 @app.route('/login', methods=['POST', 'GET'])
