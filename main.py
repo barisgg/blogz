@@ -21,7 +21,7 @@ class Blog(db.Model):
         self.owner = owner
     
     def __repr__(self):
-        return '%r' % self.id
+        return str(self.owner)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
