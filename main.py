@@ -51,9 +51,15 @@ def index():
 
 @app.route('/blog', methods=['POST', 'GET'])
 def blog():
-    posts = Blog.query.filter_by().all()
-    users = User.query.filter_by().all()
-    return render_template('blog.html', title='Pothole Funhouse', posts=posts, users=users)
+    if request.method == "GET":
+        user = request.args.get('user')
+        if user:
+            posts = Blog.query.filter_by(owner_id=user).all()
+            return render_template('blog.html', title='Pothole Funhouse', posts=posts)
+
+        if not user:
+            posts = Blog.query.filter_by().all()
+            return render_template('blog.html', title='Pothole Funhouse', posts=posts)
 
 @app.route('/post', methods=['GET'])
 def post():
