@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    
+{% if name_single %}
+<h1>{{name_single.name}}</h1>
+{% else %}
 <h1>Entries</h1>
-
+{% endif %}
     <hr />
     {% if posts|length == 0 %}
     <p>No posts yet</p>
@@ -11,13 +13,10 @@
         {% for post in posts %}
             <a href='/post?id={{post.id}}' name='title'>{{post.title}}</a>
             <p name='body'>{{post.body}}</p>
-            {% if name_single %}
-                <p>{{name_single.name}}</p>
-            {% endif %}
             {% if name %}
                 {% for name in name %}
                     {% if post.owner_id == name.id %}
-                        <p>{{name.name}}</p>
+                        <a href=blog?user={{post.owner_id}}>{{name.name}}</a></br><hr /></br>
                     {% endif %}
                 {% endfor %}
             {% endif %}
@@ -27,7 +26,6 @@
 
     {% endif %}
     
-    <hr />
     
  
 {% endblock %}

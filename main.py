@@ -55,8 +55,7 @@ def blog():
         user = request.args.get('user')
         if user:
             posts = Blog.query.filter_by(owner_id=user).all()
-            x = User.query.filter_by(id=user).first()
-            name_single = x
+            name_single = User.query.filter_by(id=user).first()
             return render_template('blog.html', title='Pothole Funhouse', posts=posts, name_single=name_single)
 
         if not user:
