@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+{% if post %}
+        <h1>{{post.title}}</h1>
+        <p>{{post.body}}</p>
+{% endif %}
+{% endblock %}

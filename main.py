@@ -13,6 +13,7 @@ class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250))
     body = db.Column(db.String(2000))
+    name = db.relationship('User', backref='user_name')
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __init__(self, title, body, owner):
@@ -25,12 +26,12 @@ class Blog(db.Model):
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(120))
+    name = db.Column(db.String(250))
     posts = db.relationship('Blog', backref='owner')
 
-    def __init__(self, name, password):
-        self.name = name
+    def __init__(self, user_name, password):
+        self.name = user_name
         self.password = password
 
     def __repr__(self):
@@ -39,20 +40,26 @@ class User(db.Model):
 @app.before_request
 def require_login():
     username = ''
-    if 'user' not in session  and request.endpoint not in ("/", "login", "register"):
-        return render_template('login.html', username=username)
-
+    allowed = ["/", "login", "register", "logout", "static"]
+    if 'user' not in session  and request.endpoint not in allowed:
+        return redirect('/login')
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    posts = Blog.query.filter_by().all()
-    return render_template('home.html', title='Pothole Funhouse', posts=posts)
+    users = User.query.filter_by().all()
+    return render_template('index.html', title="Pothole Funhouse", users=users)
 
-@app.route('/blog', methods=['GET'])
+@app.route('/blog', methods=['POST', 'GET'])
 def blog():
+    posts = Blog.query.filter_by().all()
+    users = User.query.filter_by().all()
+    return render_template('blog.html', title='Pothole Funhouse', posts=posts, users=users)
+
+@app.route('/post', methods=['GET'])
+def post():
     id = request.args['id']
     post = Blog.query.filter_by(id=id).first()
-    return render_template('blog.html', post=post)
+    return render_template('post.html', post=post)
 
     
 @app.route('/login', methods=['POST', 'GET'])
@@ -97,7 +104,7 @@ def register():
             db.session.commit()
             session['user'] = username
             flash('logged in')
-            redirect('/newpost')
+            return redirect('/newpost')
         elif password and not password2:
             flash('please repeat password', 'error')
         
@@ -129,7 +136,7 @@ def newpost():
         db.session.commit()
         post = Blog.query.filter_by(title=title).first()
         flash('Post sumbitted')
-        return redirect('/blog?id=' + str(post.id))
+        return redirect('/post?id=' + str(post.id))
     
     return render_template('newpost.html')
 
