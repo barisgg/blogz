@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['DEBUG'] = True      # displays runtime errors in the browser, too
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blog:test@localhost:8889/blog'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://bloz:test@localhost:8889/bloz'
 app.config['SQLALCHEMY_ECHO'] = True
 app.secret_key = 'safds3SDFSD'
 db = SQLAlchemy(app)
@@ -59,11 +59,21 @@ def login():
         if user and user.password == password:
             session['user'] = username
             flash('logged in')
-            redirect('/register')
+            return redirect('/newpost')
+        if not username:
+            flash('username left blank')
+            if not password:
+                flash('password left blank')
+            return redirect('login')
+        if not user:
+            flash('username does not exist', 'error')
+            return redirect('/login')
         else:
-            flash('invalid username or password', 'error')
+            if not User.query.filter_by(name=username, password=password).all():
+                flash('incorrect password', "error")
+                return redirect('/login')
+    return render_template('login.html', username=username)
     
-    return render_template('login.html')
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
@@ -71,27 +81,36 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        password2 = request.form['password']
+        password2 = request.form['password2']
 
         existing_user = User.query.filter_by(name=username).first()
 
-        if not existing_user:
+        if not existing_user and username and password and password == password2:
             new_user = User(username, password)
             db.session.add(new_user)
             db.session.commit()
-            redirect('/')
-
-    else:
-        flash('invalid username or password', 'error')
-
-
-    return render_template('register.html')
+            session['user'] = username
+            flash('logged in')
+            redirect('/newpost')
+        elif password and not password2:
+            flash('please repeat password', 'error')
+        
+        if existing_user:
+            flash('username taken', 'error')
+            redirect('/register')
+ 
+        if not password or not username and password == password2:
+            flash('one or more fields left blank', 'error')
+            redirect('/register')
+        
+       
+    return render_template('register.html', username=username)
 
 @app.route('/logout')
 def logout():
     del session['user']
     flash('logged out')
-    return render_template('login.html')
+    return redirect('/login')
 
 @app.route('/newpost', methods=['POST', 'GET'])
 def newpost():
