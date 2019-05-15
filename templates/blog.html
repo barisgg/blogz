@@ -16,7 +16,7 @@
             {% if name %}
                 {% for name in name %}
                     {% if post.owner_id == name.id %}
-                        <a href=blog?user={{post.owner_id}}>{{name.name}}</a></br><hr /></br>
+                    <p>Written by <a href=blog?user={{post.owner_id}}>{{name.name}}</a></p></br><hr /></br>
                     {% endif %}
                 {% endfor %}
             {% endif %}
