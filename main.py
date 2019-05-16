@@ -13,7 +13,7 @@ class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250))
     body = db.Column(db.String(2000))
-    name = db.relationship('User', backref='user.user_name')
+    name = db.relationship('User', backref='user_name')
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __init__(self, title, body, owner):
@@ -40,7 +40,7 @@ class User(db.Model):
 @app.before_request
 def require_login():
     username = ''
-    allowed = ["/", "login", "register", "logout", "static"]
+    allowed = [ "index", "login", "register", "logout", "static", "blog", "post"]
     if 'user' not in session  and request.endpoint not in allowed:
         return redirect('/login')
 
@@ -67,6 +67,8 @@ def blog():
 def post():
     id = request.args['id']
     post = Blog.query.filter_by(id=id).first()
+    print('XXXXXXXXXXXXXXX')
+    print(post.name)
     name = User.query.filter_by(id=post.owner_id).first()
     return render_template('post.html', post=post, name=name)
 
